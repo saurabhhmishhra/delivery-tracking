@@ -39,7 +39,11 @@ class ModelInput(BaseModel):
     weather_Thunderstorm: bool = None
 
 # Load the saved model
-eta_model = pickle.load(open('ETA_trained_model.sav', 'rb'))
+import os
+model_path = os.path.join(os.path.dirname(__file__), 'ETA_trained_model.sav')
+with open(model_path, 'rb') as f:
+    eta_model = pickle.load(f)
+
 
 @app.post('/eta_prediction')
 def eta_prediction(input_parameters: ModelInput):
