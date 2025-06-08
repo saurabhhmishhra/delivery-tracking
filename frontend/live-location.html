@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Delivery Location</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #status { margin-bottom: 20px; }
+    #location { font-size: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>Live Delivery Location Updates</h1>
+  <div id="status">Connecting to server...</div>
+  <div id="location">No location updates yet.</div>
+
+  <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"
+    integrity="sha384-SbklEQ9+wlyc5nDKmjz6Qk2jQFQbsqN0XTbihW/wW8eDNZ0JpYrQvjRYs2vEGB/S"
+    crossorigin="anonymous"></script>
+  <script>
+    const statusDiv = document.getElementById('status');
+    const locationDiv = document.getElementById('location');
+
+    // Replace URL with your backend WebSocket URL if different
+    const socket = io('http://localhost:5000');
+
+    socket.on('connect', () => {
+      statusDiv.textContent = 'Connected to server (socket ID: ' + socket.id + ')';
+    });
+
+    socket.on('disconnect', () => {
+      statusDiv.textContent = 'Disconnected from server';
+    });
+
+    socket.on('locationUpdate', (data) => {
+      console.log('Location update:', data);
+      locationDiv.textContent = `Trip ID: ${data.tripId} | Lat: ${data.lat}, Lng: ${data.lng}`;
+    });
+
+    socket.on('connect_error', (error) => {
+      statusDiv.textContent = 'Connection error: ' + error.message;
+    });
+  </script>
+</body>
+</html>

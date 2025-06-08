@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+json
+pickle
+scikit-learn
+requests
+pickle-mixin
