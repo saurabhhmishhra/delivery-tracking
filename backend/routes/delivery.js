@@ -57,3 +57,22 @@ router.post('/assign/trip', authenticateToken, authorizeRoles('manager'), async 
 });
 
 module.exports = router;
+
+// Get current trip for logged-in delivery user
+router.get('/current-trip', authenticateToken, authorizeRoles('delivery'), async (req, res) => {
+  try {
+    const currentTrip = await Trip.findOne({
+      driverId: req.user.id,
+      status: { $in: ['assigned', 'in-progress'] }
+    }).populate('driverId orderIds');
+
+    if (!currentTrip) {
+      return res.status(404).json({ error: 'No current trip found' });
+    }
+
+    res.json(currentTrip);
+  } catch (err) {
+    console.error('Get current trip error:', err);
+    res.status(500).json({ error: 'Failed to load current trip' });
+  }
+});

@@ -3,6 +3,8 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const app = express();
+const server = http.createServer(app);
 require('dotenv').config();
 
 require('./models/User');
@@ -16,14 +18,15 @@ const orderRoutes = require('./routes/orders');
 const deliveryRoutes = require('./routes/delivery');
 connectDB();
 
-const app = express();
-const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
   }
 });
+// Middlewares & routes
+app.use(cors());
+app.use(express.json());
 app.use(express.static(__dirname)); 
 app.use('/api/delivery', deliveryRoutes);
 
@@ -59,9 +62,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Middlewares & routes
-app.use(cors());
-app.use(express.json());
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/trips', tripsRouter);
